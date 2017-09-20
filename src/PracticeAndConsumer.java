@@ -30,17 +30,13 @@ public class PracticeAndConsumer {
         thread7.start();
         thread8.start();
         thread9.start();
-
     }
-
-
-
-
 }
 
 class Producer implements Runnable{
 
     private final Queue queue;
+    private volatile int count = 0;
 
     Producer(Queue queue) {
         this.queue = queue;
@@ -49,7 +45,6 @@ class Producer implements Runnable{
     @Override
     public void run() {
         synchronized (queue) {
-            for (int i=1;i<4;i++) {
                 while (queue.size() >= 5) {
                     System.out.println("queue is full and producer stop produce");
                     try {
@@ -58,10 +53,10 @@ class Producer implements Runnable{
                         e.printStackTrace();
                     }
                 }
-                queue.add(i);
-                System.out.println("我是生产者"+Thread.currentThread().getName()+"我向队列里面放了一个产品了"+i);
+                count++;
+                queue.add(count);
+                System.out.println("我是生产者"+Thread.currentThread().getName()+"我向队列里面放了一个产品了"+count);
                 queue.notify();
-            }
         }
     }
 }
@@ -78,7 +73,6 @@ class Consumer implements Runnable {
     @Override
     public void run() {
         synchronized (queue) {
-            for (int i=1;i<5;i++) {
                 while (queue.isEmpty()) {
                     System.out.println("queue is empty and consumer stop to consume");
                     try {
@@ -90,7 +84,6 @@ class Consumer implements Runnable {
                 int product = (int) queue.poll();
                 System.out.println("我是消费者"+Thread.currentThread().getName()+"我取走了产品"+product);
                 queue.notify();
-            }
         }
     }
 }
